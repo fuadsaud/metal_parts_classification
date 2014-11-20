@@ -6,14 +6,15 @@ import sys
 import csv_data
 import metal_parts
 
-def class_for_output(output):
+def class_for_output_vector(output):
     return output.index(max(output)) + 1
 
 mlp = pickle.load(open(sys.argv[1], 'rb'))
 
 test_data = csv_data.load_file(sys.argv[2])
 
-errors = profit = 0
+errors = 0
+profit = 0
 
 confusion_matrix = {
         metal_parts.BOLT:  [],
@@ -29,7 +30,7 @@ for record in test_data:
 
     print record, output
 
-    assigned_class = class_for_output(output)
+    assigned_class = class_for_output_vector(output)
 
     if assigned_class != actual_class: errors += 1
 

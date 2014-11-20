@@ -1,3 +1,5 @@
+from __future__ import division
+
 import sys
 import mlp
 import pickle
@@ -19,13 +21,17 @@ def output_vector_for_class(klass):
 def class_for_output_vector(output):
     return output.index(max(output)) + 1
 
-data = csv_data.load_file(sys.argv[1])
+def new_mlp():
+    return mlp.MLP(2, 5, 4)
 
-mlp = mlp.MLP(2, 3, 4)
+training_data = csv_data.load_file(sys.argv[1])
+test_data     = csv_data.load_file('test_data.csv')
 
-for i in range(10001):
-    # if i in BREAKPOINTS:
-    #     pickle.dump(mlp, open('nets/net_%d' % i, 'wb'))
+mlps = [new_mlp() for _ in range(len(BREAKPOINTS))]
 
-    for j, record in enumerate(data):
-        mlp.train(record[0], output_vector_for_class(record[1]))
+for breakpoint, mlp in zip(BREAKPOINTS, mlps):
+    for _ in range(breakpoint):
+        for record in training_data:
+            mlp.train(record[0], output_vector_for_class(record[1]))
+
+    pickle.dump(mlp, open('nets/net_%d' % breakpoint, 'wb'))
