@@ -21,7 +21,7 @@ class MLP:
     def train(self, inputs, target):
         self.run(inputs)
 
-        self.__update_weights(target)
+        return self.__update_weights(target)
 
     def run(self, inputs):
         if len(inputs) != self.n_in: raise ValueError('wrong number of inputs')
@@ -75,7 +75,7 @@ class MLP:
                 self.w_in[i][j] += learning_rate * hidden_deltas[j] * self.in_values[i]
 
         return sum([
-            0.5 * (target - out_value) ** 2
+            (target - out_value) ** 2
             for target, out_value
             in zip(targets, self.out_values)])
 
