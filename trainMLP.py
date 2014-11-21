@@ -5,6 +5,7 @@ import mlp
 import pickle
 import csv_data
 import metal_parts
+import matplotlib.pylab as plt
 
 BREAKPOINTS = [0, 10, 100, 1000, 10000]
 
@@ -18,20 +19,29 @@ CLASSES = {
 def output_vector_for_class(klass):
     return CLASSES[klass]
 
-def class_for_output_vector(output):
-    return output.index(max(output)) + 1
-
-def new_mlp():
-    return mlp.MLP(2, 5, 4)
-
 training_data = csv_data.load_file(sys.argv[1])
-test_data     = csv_data.load_file('test_data.csv')
 
-mlps = [new_mlp() for _ in range(len(BREAKPOINTS))]
+net = mlp.MLP(2, 5, 4)
 
-for breakpoint, mlp in zip(BREAKPOINTS, mlps):
-    for _ in range(breakpoint):
-        for record in training_data:
-            mlp.train(record[0], output_vector_for_class(record[1]))
+sses = []
 
-    pickle.dump(mlp, open('nets/net_%d' % breakpoint, 'wb'))
+for epoch in range(BREAKPOINTS[-1] + 1):
+    if epoch in BREAKPOINTS:
+        pickle.dump(net, open('nets/net_%d' % epoch, 'wb'))
+
+    sse = sum([
+        net.train(record[0], output_vector_for_class(record[1]))
+        for record
+        in training_data])
+
+    sses.append(sse)
+
+plt.plot(range(len(sses)), sses, 'ro')
+plt.xlim((0, len(sses)))
+plt.ylim((0, max(sses)))
+
+plt.title('SSE over Epochs')
+plt.xlabel('Epochs')
+plt.ylabel('SSE')
+
+plt.savefig('mlp_sse.png')
