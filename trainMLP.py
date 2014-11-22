@@ -44,4 +44,4 @@ plt.title('SSE over Epochs')
 plt.xlabel('Epochs')
 plt.ylabel('SSE')
 
-plt.savefig('mlp_sse.png')
+plt.savefig('imgs/mlp_sse.png')
