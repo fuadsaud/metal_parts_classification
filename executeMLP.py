@@ -28,8 +28,6 @@ for record in test_data:
 
     output = mlp.run(record[0])
 
-    print record, output
-
     assigned_class = class_for_output_vector(output)
 
     if assigned_class != actual_class: errors += 1
