@@ -1,8 +1,10 @@
+from __future__ import division
+
 import sys
 import csv_data
 import matplotlib.pylab as plt
 
-def classification_distribution(data, img_file_name):
+def classification_distribution(data, title, img_file_name):
     x_axis = [record[0][0] for record in data]
     y_axis = [record[0][1] for record in data]
     color  = [record[1]    for record in data]
@@ -12,10 +14,14 @@ def classification_distribution(data, img_file_name):
     plt.xlim((0, 1))
     plt.ylim((0, 1))
 
-    plt.title('Records classification distribution')
+    plt.title(title)
     plt.xlabel('Six-fold rotational symmetry')
     plt.ylabel('Eccentricity')
 
     plt.savefig(img_file_name)
 
-classification_distribution(csv_data.load_file(sys.argv[1]), sys.argv[2])
+classification_distribution(
+    csv_data.load_file(sys.argv[1]),
+    sys.argv[2],
+    sys.argv[3],
+)
