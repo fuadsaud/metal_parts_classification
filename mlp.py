@@ -11,12 +11,16 @@ class MLP:
         self.n_hid = n_hid
         self.n_out = n_out
 
-        self.in_values  = [1.0] * self.n_in
-        self.hid_values = [1.0] * self.n_hid
+        self.in_values  = [1.0] * (self.n_in  + 1)
+        self.hid_values = [1.0] * (self.n_hid + 1)
         self.out_values = [1.0] * self.n_out
 
-        self.w_in  = np.random.rand(self.n_in,  self.n_hid)
-        self.w_out = np.random.rand(self.n_hid, self.n_out)
+        self.w_in  = np.random.rand(self.n_in  + 1, self.n_hid)
+        self.w_out = np.random.rand(self.n_hid + 1, self.n_out)
+
+        # biases
+        self.in_values[-1]  = 1
+        self.hid_values[-1] = 1
 
     def train(self, inputs, target):
         self.run(inputs)
@@ -26,14 +30,14 @@ class MLP:
     def run(self, inputs):
         if len(inputs) != self.n_in: raise ValueError('wrong number of inputs')
 
-        self.in_values = inputs
+        self.in_values[0:-1] = inputs
 
-        self.hid_values = [
+        self.hid_values[0:-1] = [
                 self.__sigmoid(
                     sum([
                         self.in_values[j] * self.w_in[j][i]
                         for j
-                        in range(self.n_in)]))
+                        in range(len(self.in_values))]))
                     for i
                     in range(self.n_hid)]
 
@@ -43,7 +47,7 @@ class MLP:
                     sum([
                         self.hid_values[j] * self.w_out[j][i]
                         for j
-                        in range(self.n_hid)]))
+                        in range(len(self.hid_values))]))
                     for i
                     in range(self.n_out)]
 
@@ -64,13 +68,13 @@ class MLP:
                  for j
                  in range(self.n_out)])
             for i
-            in range(self.n_hid)]
+            in range(len(self.hid_values))]
 
-        for i in range(self.n_hid):
+        for i in range(len(self.hid_values)):
             for j in range(self.n_out):
                 self.w_out[i][j] += learning_rate * output_deltas[j] * self.hid_values[i]
 
-        for i in range(self.n_in):
+        for i in range(len(self.in_values)):
             for j in range(self.n_hid):
                 self.w_in[i][j] += learning_rate * hidden_deltas[j] * self.in_values[i]
 
