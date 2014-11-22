@@ -8,11 +8,7 @@ CLASSIFICATION_REGIONS_IMG_FILE_PREFIX = imgs/net_classification_region_
 
 NET_FILE_PREFIX = nets/net_
 
-default: dt
-
 mlp: train_mlp execute_mlp
-
-dt: train_dt execute_dt
 
 train_mlp:
 	python trainMLP.py $(TRAINING_DATA_FILE)
@@ -22,8 +18,6 @@ execute_mlp:
 
 train_dt:
 	python trainDT.py $(TRAINING_DATA_FILE)
-
-execute_dt:
 
 plot_training_data:
 	python plot_classification_distribution.py $(TRAINING_DATA_FILE) 'Training Data Distribution' $(TRAINING_DATA_DISTRIBUTION_IMG_FILE)
