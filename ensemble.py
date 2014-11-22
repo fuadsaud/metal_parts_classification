@@ -1,9 +1,9 @@
 from __future__  import division
-# from scipy.stats import entropy
 from itertools   import groupby
 from math        import log
+from collections import Counter
 
-import collections
+import scipy.stats
 import numpy as np
 
 class Forest:
@@ -17,7 +17,7 @@ def derive_tree(training_samples):
     elif all_same_class(training_samples):
         return training_samples[0][1]
     elif no_attributes(training_samples):
-        return collections.Counter(classifications(training_samples)).most_common(1)
+        return Counter(classifications(training_samples)).most_common(1)
     else:
         best = best_attribute(training_samples)
 
@@ -31,18 +31,41 @@ def classifications(samples):
     return [sample[1] for sample in samples]
 
 def attributes(samples):
-    return [sample[0] for sample in samples]
+    return np.transpose([sample[0] for sample in samples])
 
-def best_attribute(samples):
+def best_attribute(samples, threshold=0.5):
+    classif = classifications(samples)
     total_entropy = entropy(classifications(samples))
+
+    attrs = attributes(samples)
+
+    for attr in attrs:
+        splits = split_attr(zip(attr, classif), 0.5)
+        for split in splits:
+            print list(split)
+
+        # print groupby(np.sort(s, axis=1), lambda x: x[-1])
+
+        # for key, value in groupby(zip(attr, classif), lambda pair: pair[-1]):
+        #     print key, len([pair[0] for pair in list(value)])
 
     print total_entropy
 
 def entropy(samples):
-    return sum([
-        -probability * log(probability, 2)
-        for probability
-        in [
-            len(s) / len(samples)
-            for s
-            in groupby(np.sort(samples))]])
+    return scipy.stats.entropy(probabilities(samples))
+
+def probabilities(samples):
+    return [
+        len(list(samples_subset)) / len(samples)
+        for klass, samples_subset
+        in groupby(np.sort(samples))]
+
+def split_attr(classified_attrs, threshold):
+    return [group[1]
+            for group in
+            groupby(np.sort(classified_attrs, axis=0), lambda pair: pair[0] < threshold)]
+
+def pp(arg):
+    print arg
+
+    return arg
